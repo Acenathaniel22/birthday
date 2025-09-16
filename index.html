@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My Love! 💕</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Happy Birthday My Love! <span class="heart">💕</span></h1>
+            <p class="subtitle">To the most beautiful girl in the world!</p>
+        </header>
+
+        <!-- 🎶 Music Player -->
+        <div class="music-container">
+            <div class="music-box">
+                <button id="musicBtn" class="music-btn">
+                    <i class="fas fa-play"></i>
+                    <span>Play Our Song</span>
+                </button>
+                <audio id="bgMusic" loop preload="auto">
+                    <source src="assets/My exeception.mp3" type="audio/mpeg">
+                    <source src="assets/my-exception.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+        
+        <div class="message-container">
+            <p class="message">
+                My dearest, on your special day, I want you to know how incredibly blessed I am to have you in my life. 
+                Your smile brightens my darkest days, your laughter is my favorite melody, and your love is the greatest gift I've ever received. 
+                May this year bring you as much joy and happiness as you've brought into my life. You deserve all the wonderful things this world has to offer. 
+                Happy birthday to the woman who makes my heart skip a beat every single day! 💖
+            </p>
+        </div>
+        
+        <!-- 🎁 Single Gift Box with Carousel -->
+        <div class="gift-container">
+            <div class="big-gift-box" id="bigGiftBox">
+                <div class="gift-box-base"></div>
+                <div class="gift-box-lid" id="giftLid"></div>
+                <div class="gift-box-ribbon-h"></div>
+                <div class="gift-box-ribbon-v"></div>
+                <div class="gift-box-bow">
+                    <div class="bow-left"></div>
+                    <div class="bow-right"></div>
+                    <div class="bow-center"></div>
+                </div>
+                
+                <!-- Photos Carousel inside the gift box -->
+                <div class="gift-box-content" id="giftContent">
+                    <div class="photo-carousel" id="photoCarousel">
+                        <div class="photo-slide active" data-index="0">
+                            <img src="assets/1.jpg" alt="Our beautiful memory 1">
+                        </div>
+                        <div class="photo-slide" data-index="1">
+                            <img src="assets/2.jpg" alt="Our beautiful memory 2">
+                        </div>
+                        <div class="photo-slide" data-index="2">
+                            <img src="assets/3.jpg" alt="Our beautiful memory 3">
+                        </div>
+                        <div class="photo-slide" data-index="3">
+                            <img src="assets/4.jpg" alt="Our beautiful memory 4">
+            </div>
+                        <div class="photo-slide" data-index="4">
+                            <img src="assets/5.jpg" alt="Our beautiful memory 5">
+            </div>
+                        <div class="photo-slide" data-index="5">
+                            <img src="assets/6.jpg" alt="Our beautiful memory 6">
+            </div>
+                        <div class="photo-slide" data-index="6">
+                            <img src="assets/7.jpg" alt="Our beautiful memory 7">
+            </div>
+                        <div class="photo-slide" data-index="7">
+                            <img src="assets/8.jpg" alt="Our beautiful memory 8">
+            </div>
+            </div>
+                    
+                    <!-- Navigation arrows removed for automated carousel only -->
+                    
+                    <!-- Photo indicators -->
+                    <div class="gift-indicators" id="giftIndicators"></div>
+                    
+                    <!-- Mobile swipe hint removed -->
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Full-screen Modal -->
+    <div class="modal" id="imageModal">
+        <div class="close-btn" id="closeModal">&times;</div>
+        <div class="carousel-control prev" id="prevBtn">❮</div>
+        <div class="carousel-control next" id="nextBtn">❯</div>
+        <div class="modal-content">
+            <img class="modal-img" id="modalImage" src="" alt="">
+            <div class="carousel-indicators" id="indicators"></div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Made with <span class="heart">💕</span> for you on your special day</p>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentPhotoIndex = 0;
+        let isGiftOpened = false;
+        let autoAdvanceInterval;
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let photosViewed = 0;
+        let hasCompletedFullCycle = false;
+        
+        // Photo sources array
+        const photoSources = [
+            'assets/1.jpg', 'assets/2.jpg', 'assets/3.jpg', 'assets/4.jpg',
+            'assets/5.jpg', 'assets/6.jpg', 'assets/7.jpg', 'assets/8.jpg'
+        ];
+        
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#ff9a9e', '#fad0c4', '#d4418e', '#6a3093', '#ff4d7e', '#ff69b4'];
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.width = (5 + Math.random() * 15) + 'px';
+                confetti.style.height = (5 + Math.random() * 15) + 'px';
+                document.body.appendChild(confetti);
+            }
+        }
+        
+        // Gift box opening sound effect
+        function playGiftBoxSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } catch (error) {
+                console.log('Audio context not available');
+            }
+        }
+        
+        // Show specific photo in gift box
+        function showGiftPhoto(index) {
+            currentPhotoIndex = index;
+            const photoSlides = document.querySelectorAll('.photo-slide');
+            const indicators = document.querySelectorAll('.gift-indicator');
+            
+            // Update active slide
+            photoSlides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            
+            // Update active indicator
+            indicators.forEach((indicator, i) => {
+                if (i === index) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+        
+        // Auto-advance photos
+        function startAutoAdvance() {
+            autoAdvanceInterval = setInterval(() => {
+                if (isGiftOpened && !hasCompletedFullCycle) {
+                    photosViewed++;
+                    
+                    // Check if we've seen all photos once
+                    if (photosViewed >= photoSources.length) {
+                        hasCompletedFullCycle = true;
+                        stopAutoAdvance();
+                        // Wait a bit longer on the last photo, then close the box
+                        setTimeout(() => {
+                            closeGiftBox();
+                        }, 3000);
+                        return; // Don't advance to next photo
+                    }
+                    
+                    // Advance to next photo
+                    currentPhotoIndex = (currentPhotoIndex + 1) % photoSources.length;
+                    showGiftPhoto(currentPhotoIndex);
+                }
+            }, 3000);
+        }
+        
+        function stopAutoAdvance() {
+            clearInterval(autoAdvanceInterval);
+        }
+        
+        // Close gift box function
+        function closeGiftBox() {
+            const bigGiftBox = document.getElementById('bigGiftBox');
+            if (bigGiftBox && isGiftOpened) {
+                // Stop any running intervals
+                stopAutoAdvance();
+                
+                // Close the gift box
+                bigGiftBox.classList.remove('opened');
+                isGiftOpened = false;
+                
+                // Reset variables for next time
+                photosViewed = 0;
+                hasCompletedFullCycle = false;
+                currentPhotoIndex = 0;
+                
+                // Reset to first photo (but don't show it since box is closed)
+                const photoSlides = document.querySelectorAll('.photo-slide');
+                const indicators = document.querySelectorAll('.gift-indicator');
+                
+                photoSlides.forEach((slide, i) => {
+                    if (i === 0) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+                
+                indicators.forEach((indicator, i) => {
+                    if (i === 0) {
+                        indicator.classList.add('active');
+                    } else {
+                        indicator.classList.remove('active');
+                    }
+                });
+                
+                // Play closing sound
+                playGiftBoxSound();
+                
+                console.log('Gift box closed automatically after viewing all photos');
+            }
+        }
+        
+        // Touch gesture handling for mobile
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0) {
+                    // Swipe right - previous photo
+                    showGiftPhoto((currentPhotoIndex - 1 + photoSources.length) % photoSources.length);
+                } else {
+                    // Swipe left - next photo
+                    showGiftPhoto((currentPhotoIndex + 1) % photoSources.length);
+                }
+                stopAutoAdvance();
+            }
+        }
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const bigGiftBox = document.getElementById('bigGiftBox');
+            const giftIndicators = document.getElementById('giftIndicators');
+            const photoCarousel = document.getElementById('photoCarousel');
+            
+            // Create indicators
+            photoSources.forEach((_, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = 'gift-indicator';
+                if (index === 0) indicator.classList.add('active');
+                indicator.addEventListener('click', () => {
+                    showGiftPhoto(index);
+                    stopAutoAdvance();
+                });
+                giftIndicators.appendChild(indicator);
+            });
+            
+            // Open gift box on click
+            bigGiftBox.addEventListener('click', (e) => {
+                if (e.target.closest('.gift-nav') || e.target.closest('.gift-indicator') || e.target.closest('.photo-slide')) {
+                    return;
+                }
+                
+                if (!isGiftOpened) {
+                    bigGiftBox.classList.add('opened');
+                    isGiftOpened = true;
+                    playGiftBoxSound();
+                    
+                    // Reset variables for new viewing session
+                    photosViewed = 0;
+                    hasCompletedFullCycle = false;
+                    currentPhotoIndex = 0;
+                    showGiftPhoto(0);
+                    
+                    console.log('Gift box opened - starting photo carousel');
+                    setTimeout(startAutoAdvance, 1000);
+                }
+            });
+            
+            // Navigation arrows removed - carousel is now fully automated
+            
+            // Touch events for mobile carousel
+            photoCarousel.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            photoCarousel.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            // Hover effects
+            bigGiftBox.addEventListener('mouseenter', () => {
+                if (!isGiftOpened) {
+                    playGiftBoxSound();
+                    bigGiftBox.style.cursor = 'pointer';
+                    bigGiftBox.title = 'Click to open your special gift! 💕';
+                }
+            });
+        });
+        
+        // Modal functionality
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const indicators = document.getElementById('indicators');
+        
+        // Create modal indicators
+        photoSources.forEach((_, index) => {
+            const indicator = document.createElement('div');
+            indicator.className = 'indicator';
+            if (index === 0) indicator.classList.add('active');
+            indicator.addEventListener('click', () => {
+                showModalImage(index);
+            });
+            indicators.appendChild(indicator);
+        });
+        
+        // Open modal when clicking on photos
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.photo-slide img')) {
+                const slide = e.target.closest('.photo-slide');
+                const index = parseInt(slide.dataset.index);
+                showModalImage(index);
+                modal.style.display = 'flex';
+            }
+        });
+        
+        // Show specific image in modal
+        function showModalImage(index) {
+            modalImg.src = photoSources[index];
+            modalImg.alt = `Our beautiful memory ${index + 1}`;
+            
+            // Update active indicator
+            document.querySelectorAll('.indicator').forEach((indicator, i) => {
+                if (i === index) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+        
+        // Modal controls
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const currentIndex = photoSources.indexOf(modalImg.src.split('/').pop());
+            showModalImage((currentIndex - 1 + photoSources.length) % photoSources.length);
+        });
+        
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const currentIndex = photoSources.indexOf(modalImg.src.split('/').pop());
+            showModalImage((currentIndex + 1) % photoSources.length);
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (modal.style.display === 'flex') {
+                if (e.key === 'ArrowLeft') {
+                    const currentIndex = photoSources.indexOf(modalImg.src.split('/').pop());
+                    showModalImage((currentIndex - 1 + photoSources.length) % photoSources.length);
+                } else if (e.key === 'ArrowRight') {
+                    const currentIndex = photoSources.indexOf(modalImg.src.split('/').pop());
+                    showModalImage((currentIndex + 1) % photoSources.length);
+                } else if (e.key === 'Escape') {
+                    modal.style.display = 'none';
+                }
+            }
+        });
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Music Controls
+        const music = document.getElementById("bgMusic");
+        const musicBtn = document.getElementById("musicBtn");
+
+        music.addEventListener('error', (e) => {
+            console.log('Music file not found');
+            musicBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Music Not Found</span>';
+            musicBtn.style.background = '#ff6b6b';
+        });
+
+        musicBtn.addEventListener("click", () => {
+            if (music.paused) {
+                music.play().then(() => {
+                    musicBtn.innerHTML = '<i class="fas fa-pause"></i><span>Pause Our Song</span>';
+                }).catch((error) => {
+                    console.log('Error playing music:', error);
+                    musicBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Play Error</span>';
+                });
+            } else {
+                music.pause();
+                musicBtn.innerHTML = '<i class="fas fa-play"></i><span>Play Our Song</span>';
+            }
+        });
+        
+        // Initialize confetti
+        createConfetti();
+    </script>
+</body>
+</html>
