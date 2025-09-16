@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday My Love! 💕</title>
+    <title>Happy Birthday Darling! 💕</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Happy Birthday My Love! <span class="heart">💕</span></h1>
-            <p class="subtitle">To the most beautiful girl in the world!</p>
+            <h1>Happy Birthday Darling! <span class="heart">💕</span></h1>
+            <p class="subtitle">To the most prettiest girl in the world!</p>
         </header>
 
         <!-- 🎶 Music Player -->
@@ -31,10 +31,15 @@
         
         <div class="message-container">
             <p class="message">
-                My dearest, on your special day, I want you to know how incredibly blessed I am to have you in my life. 
-                Your smile brightens my darkest days, your laughter is my favorite melody, and your love is the greatest gift I've ever received. 
-                May this year bring you as much joy and happiness as you've brought into my life. You deserve all the wonderful things this world has to offer. 
-                Happy birthday to the woman who makes my heart skip a beat every single day! 💖
+                Happy Birthday Darling, thank youu sa mga gifts na binibigay mo sakin and now 
+                ikaw naman, so ginawa ko to para sayo, simple lng sa tingin pero special to para sakin.
+                You turn even ordinary days into something worth remembering every moment with you is 
+                my happy place. Here’s to more hugs, more laughter, and a lifetime of making memories
+                side by side.And i hope nagustuhan mo tong gift ko sayoo, i miss youu, basta tuloy ka
+                lng sa gusto mo andito lng po ako, susuportahan ka sa mga bagay na gusto mo, and wag 
+                makakalimot lagi kay loard na mag thank you bad days man or good days, i love you bebu,
+                makakabawi den ako sayo thank you po, pero ngayon enjoy mo lng birthday mo,
+                I love you so much! Happy birthday bu! 💖
             </p>
         </div>
         
@@ -78,7 +83,13 @@
                         <div class="photo-slide" data-index="7">
                             <img src="assets/8.jpg" alt="Our beautiful memory 8">
             </div>
+                        <div class="photo-slide" data-index="8">
+                            <img src="assets/9.jpg" alt="Our beautiful memory 9">
             </div>
+                        <div class="photo-slide" data-index="9">
+                            <img src="assets/10.jpg" alt="Our beautiful memory 10">
+            </div>                      
+                        
                     
                     <!-- Navigation arrows removed for automated carousel only -->
                     
@@ -293,14 +304,12 @@
             
             // Open gift box on click
             bigGiftBox.addEventListener('click', (e) => {
-                if (e.target.closest('.gift-nav') || e.target.closest('.gift-indicator') || e.target.closest('.photo-slide')) {
-                    return;
-                }
+                // Remove or comment out the sound effect line below
+                // playGiftBoxSound();
                 
                 if (!isGiftOpened) {
                     bigGiftBox.classList.add('opened');
                     isGiftOpened = true;
-                    playGiftBoxSound();
                     
                     // Reset variables for new viewing session
                     photosViewed = 0;
